@@ -1,0 +1,26 @@
+name: 🚀 Deploy Campus Party Dashboard
+
+# Quando executar: sempre que fizer push na branch main
+on:
+  push:
+    branches: [ main ]
+
+# O que fazer
+jobs:
+  deploy:
+    name: 🎉 Deploy para 1gigahost
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Passo 1: Baixar o código do repositório
+      - name: 🚚 Baixar código
+        uses: actions/checkout@v4
+      
+      # Passo 2: Enviar para sua hospedagem via FTP
+      - name: 📂 Enviar arquivos via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: /public_html/campus-party/
