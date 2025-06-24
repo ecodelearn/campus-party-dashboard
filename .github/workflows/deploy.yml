@@ -6,26 +6,36 @@ on:
 
 jobs:
   deploy:
-    name: 🎉 Deploy via FTP (cPanel)
+    name: 🎉 Deploy Multi-servidor
     runs-on: ubuntu-latest
     
     steps:
       - name: 🚚 Baixar código
         uses: actions/checkout@v4
       
-      - name: 🔍 Debug DNS
+      - name: 🔍 Descobrir servidor correto
+        id: find-server
         run: |
-          echo "Testando resolução DNS..."
-          nslookup ftp.linuxgo.com.br
-          ping -c 2 ftp.linuxgo.com.br || echo "Ping pode falhar por firewall"
+          servers=("linuxgo.com.br" "1gigahost.com.br" "ftp.1gigahost.com.br")
+          
+          for server in "${servers[@]}"; do
+            echo "Testando: $server"
+            if nslookup $server > /dev/null 2>&1; then
+              echo "✅ DNS OK para: $server"
+              echo "server=$server" >> $GITHUB_OUTPUT
+              break
+            else
+              echo "❌ DNS falhou para: $server"
+            fi
+          done
       
       - name: 📂 Deploy via FTP
+        if: steps.find-server.outputs.server
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ftp.linuxgo.com.br
+          server: ${{ steps.find-server.outputs.server }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           port: 21
           protocol: ftp
           server-dir: /public_html/campus-party/
-          timeout: 60000
