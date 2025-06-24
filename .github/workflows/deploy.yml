@@ -6,19 +6,20 @@ on:
 
 jobs:
   deploy:
-    name: 🎉 Deploy para 1gigahost
+    name: 🎉 Deploy via SFTP
     runs-on: ubuntu-latest
     
     steps:
       - name: 🚚 Baixar código
         uses: actions/checkout@v4
       
-      - name: 📂 Deploy via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: 📂 Deploy via SFTP
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          port: 21
-          protocol: ftp
-          server-dir: /public_html/campus-party/
+          port: 22
+          local_path: './*'
+          remote_path: '/public_html/campus-party/'
+          delete_remote_files: false
