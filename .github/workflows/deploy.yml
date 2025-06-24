@@ -38,4 +38,4 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           port: 21
           protocol: ftp
-          server-dir: /public_html/campus-party/
+          server-dir: /campus-party/
