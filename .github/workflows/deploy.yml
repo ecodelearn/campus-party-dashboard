@@ -6,20 +6,26 @@ on:
 
 jobs:
   deploy:
-    name: 🎉 Deploy via SFTP
+    name: 🎉 Deploy via FTP (cPanel)
     runs-on: ubuntu-latest
     
     steps:
       - name: 🚚 Baixar código
         uses: actions/checkout@v4
       
-      - name: 📂 Deploy via SFTP
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+      - name: 🔍 Debug DNS
+        run: |
+          echo "Testando resolução DNS..."
+          nslookup ftp.linuxgo.com.br
+          ping -c 2 ftp.linuxgo.com.br || echo "Ping pode falhar por firewall"
+      
+      - name: 📂 Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.FTP_SERVER }}
+          server: ftp.linuxgo.com.br
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          port: 22
-          local_path: './*'
-          remote_path: '/public_html/campus-party/'
-          delete_remote_files: false
+          port: 21
+          protocol: ftp
+          server-dir: /public_html/campus-party/
+          timeout: 60000
